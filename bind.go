@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"strings"
 
-	jsoniter "github.com/json-iterator/go"
 	"github.com/valyala/fasthttp"
 )
 
@@ -36,7 +35,7 @@ func (b *DefaultBinder) Bind(i interface{}, c *Context) (err error) {
 
 	switch {
 	case strings.HasPrefix(ctype, MIMEApplicationJSON):
-		if err = jsoniter.Unmarshal(req.Body(), i); err != nil {
+		if err = json.Unmarshal(req.Body(), i); err != nil {
 			if ute, ok := err.(*json.UnmarshalTypeError); ok {
 				return NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Unmarshal type error: expected=%v, got=%v, field=%v, offset=%v", ute.Type, ute.Value, ute.Field, ute.Offset))
 			} else if se, ok := err.(*json.SyntaxError); ok {
