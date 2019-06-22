@@ -29,6 +29,7 @@ type Context struct {
 	*fasthttp.RequestCtx
 
 	Serialize SerializeFunc // the function serializing the given data of arbitrary type into a byte array.
+	Binder    Binder
 
 	router   *Router
 	pnames   []string               // list of route parameter names
@@ -112,7 +113,7 @@ func (c *Context) WriteData(data interface{}) (err error) {
 	return
 }
 
-// JSON response the given request with a JSON body and a HTTP status
+// JSON response the given request with a JSON body, HTTP status and correct Content-Type
 func (c *Context) JSON(status int, body interface{}) (err error) {
 	data, err := jsoniter.Marshal(body)
 
@@ -126,6 +127,11 @@ func (c *Context) JSON(status int, body interface{}) (err error) {
 	c.Response.Header.Set("Content-Type", "application/json")
 
 	return nil
+}
+
+// Bind execute the Bind implementation
+func (c *Context) Bind(i interface{}) (err error) {
+	return c.Binder.Bind(i, c)
 }
 
 // init sets the request and response of the context and resets all other properties.

@@ -62,6 +62,7 @@ func New() *Router {
 		return &Context{
 			pvalues: make([]string, r.maxParams),
 			router:  r,
+			Binder:  &DefaultBinder{},
 		}
 	}
 	return r
