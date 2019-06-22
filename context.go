@@ -7,11 +7,22 @@ package routing
 import (
 	"fmt"
 
+	jsoniter "github.com/json-iterator/go"
 	"github.com/valyala/fasthttp"
 )
 
 // SerializeFunc serializes the given data of arbitrary type into a byte array.
 type SerializeFunc func(data interface{}) ([]byte, error)
+
+var defaultContentType = []byte("text/plain; charset=utf-8")
+
+// ErrorWithHeaders Error sets response status code to the given value and sets response body
+// to the given message.
+func (c *Context) ErrorWithHeaders(msg string, statusCode int) {
+	c.SetStatusCode(statusCode)
+	c.SetContentTypeBytes(defaultContentType)
+	c.SetBodyString(msg)
+}
 
 // Context represents the contextual data and environment while processing an incoming HTTP request.
 type Context struct {
@@ -99,6 +110,22 @@ func (c *Context) WriteData(data interface{}) (err error) {
 		_, err = c.Write(bytes)
 	}
 	return
+}
+
+// JSON response the given request with a JSON body and a HTTP status
+func (c *Context) JSON(status int, body interface{}) (err error) {
+	data, err := jsoniter.Marshal(body)
+
+	if err != nil {
+		c.Response.SetStatusCode(fasthttp.StatusInternalServerError)
+		return err
+	}
+
+	c.Response.SetStatusCode(status)
+	c.Response.SetBody(data)
+	c.Response.Header.Set("Content-Type", "application/json")
+
+	return nil
 }
 
 // init sets the request and response of the context and resets all other properties.

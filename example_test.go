@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/go-ozzo/ozzo-routing"
+	routing "github.com/go-ozzo/ozzo-routing"
 	"github.com/go-ozzo/ozzo-routing/access"
 	"github.com/go-ozzo/ozzo-routing/content"
 	"github.com/go-ozzo/ozzo-routing/fault"
